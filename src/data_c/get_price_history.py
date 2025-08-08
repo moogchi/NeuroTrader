@@ -36,6 +36,5 @@ def get_price_history(ticker_symbol, compact='compact'):
 
     # with open(output_path, 'w') as outfile:
     #     json.dump(data, outfile, indent=4)
-
-
-get_price_history('AAPL','full') 
+ 
+get_price_history("NVDA")

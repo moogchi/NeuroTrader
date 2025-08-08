@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 import requests
-import json
 import pandas as pd
 import argparse
 
@@ -28,7 +27,12 @@ def get_price_history(ticker_symbol, compact='compact'):
         '5. volume': 'Volume'
     })
 
-    df.to_csv(f'{ticker_symbol}_price_history.csv')
+    output_dir = 'data/raw'
+    os.makedirs(output_dir, exist_ok=True)
+
+    file_path = os.path.join(output_dir, f'{ticker_symbol}_price_history.csv')
+
+    df.to_csv(file_path)
 
 
 
@@ -37,5 +41,15 @@ def get_price_history(ticker_symbol, compact='compact'):
 
     # with open(output_path, 'w') as outfile:
     #     json.dump(data, outfile, indent=4)
- 
-parser = argparse.ArgumentParser(description="Fetch history ")
+
+def main():
+    parser = argparse.ArgumentParser(description="Fetch history ")
+    parser.add_argument('ticker', help="The stock ticker symbol (e.g., AAPL)")
+    parser.add_argument('--size', default = 'compact', help = 'compact for past 100 days full for all historical data')
+
+    args = parser.parse_args()
+
+    get_price_history(args.ticker, args.size)
+
+if __name__== '__main__':
+    main()

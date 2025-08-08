@@ -4,6 +4,7 @@ load_dotenv()
 import requests
 import json
 import pandas as pd
+import argparse
 
 
 def get_price_history(ticker_symbol, compact='compact'):
@@ -37,4 +38,4 @@ def get_price_history(ticker_symbol, compact='compact'):
     # with open(output_path, 'w') as outfile:
     #     json.dump(data, outfile, indent=4)
  
-get_price_history("NVDA")
+parser = argparse.ArgumentParser(description="Fetch history ")

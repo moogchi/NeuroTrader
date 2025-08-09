@@ -18,6 +18,7 @@ def get_price_history(ticker_symbol, compact='compact'):
     df = pd.DataFrame(refined_data).T
     df.index = pd.to_datetime(df.index)
     df.index.name = 'Date'
+    df.sort_index(inplace=True)
     df = df.astype(float)
     df = df.rename(columns={
         '1. open': 'Open',

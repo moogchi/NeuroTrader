@@ -3,13 +3,26 @@ channels:
   - conda-forge
   - anaconda
 dependencies:
+  # --- Conda Packages ---
   - python=3.11
   - notebook
   - pandas
   - matplotlib
-  - alpha_vantage
+  - scikit-learn
+  - xgboost
+  - pandas-ta
   - python-dotenv
   - numpy<2.0
-  - xgboost
-  - scikit-learn
-  - pandas-ta
+  - pip
+  - libuv
+
+  # Web and Database
+  - django
+  - psycopg2
+
+  # --- Pip Packages for XPU ---
+  - pip:
+    - torch==2.5.1+cxx11.abi
+    - torchvision==0.20.1+cxx11.abi
+    - torchaudio==2.5.1+cxx11.abi
+    - intel-extension-for-pytorch==2.5.10+xpu

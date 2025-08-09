@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # The PostgreSQL Database Service
+  db:
+    image: postgres:15
+    container_name: neurotrader_db
+    environment:
+      - POSTGRES_DB=neurotrader_db
+      - POSTGRES_USER=neurotrader_user
+      - POSTGRES_PASSWORD=strongpassword123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+  # Your Main Application Service (AI Model, Django, etc.)
+  app:
+    build: .
+    container_name: neurotrader_app
+    ports:
+      - "8000:8000" # For Django
+      - "8888:8888" # For Jupyter
+    volumes:
+      - .:/app # Mounts your local project directory into the container
+    depends_on:
+      - db
+    # Keep the container running
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:

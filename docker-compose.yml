@@ -14,20 +14,24 @@ services:
     ports:
       - "5432:5432"
 
-  # Your Main Application Service (AI Model, Django, etc.)
+  # Your Main Application Service (AI Model with Intel XPU support)
   app:
-    build: .
+    image: oneapi-torch-xpu:2025.1
     container_name: neurotrader_app
     ports:
       - "8000:8000" # For Django
       - "8888:8888" # For Jupyter
     volumes:
-      - .:/app # Mounts your local project directory into the container
+      - .:/workspace # Mount project directory to match the WORKDIR in the image
+    devices:
+      - /dev/dri:/dev/dri # Give container access to Intel XPU
     depends_on:
       - db
     # Keep the container running
     stdin_open: true
     tty: true
+    environment:
+      - PYTHONPATH=/workspace # Ensure Python can find your modules
 
 volumes:
   postgres_data:

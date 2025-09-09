@@ -2,6 +2,7 @@ name: neurotrader
 channels:
   - conda-forge
   - anaconda
+  - jsandhu
 dependencies:
   # --- Conda Packages ---
   - python=3.11
@@ -15,6 +16,8 @@ dependencies:
   - numpy<2.0
   - pip
   - libuv
+  - polygon
+  - textblob
 
   # Web and Database
   - django

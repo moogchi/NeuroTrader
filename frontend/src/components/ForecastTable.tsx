@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Card } from './ui/card';
 import {
   Table,
@@ -9,38 +9,25 @@ import {
   TableRow,
 } from './ui/table';
 
-// Generate 7-day forecast data
-const generateForecastData = () => {
-  const basePrice = 228.87;
-  const forecasts = [];
-  
-  for (let i = 1; i <= 7; i++) {
-    const date = new Date('2025-09-09');
-    date.setDate(date.getDate() + i);
-    
-    // Simulate price changes with upward trend
-    const change = (Math.random() * 6 - 2) + 1; // Slight upward bias
-    const predictedPrice = basePrice + (i * 0.8) + change;
-    const direction = change > 0 ? 'up' : 'down';
-    
-    forecasts.push({
-      date: date.toISOString().split('T')[0],
-      price: Math.round(predictedPrice * 100) / 100,
-      direction,
-      formattedDate: date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric',
-        year: 'numeric'
-      })
-    });
-  }
-  
-  return forecasts;
-};
+interface ForecastDataPoint {
+  date: string;
+  price: number;
+  confidence: number;
+}
 
-const forecastData = generateForecastData();
+interface ForecastTableProps {
+  forecastData: ForecastDataPoint[];
+}
 
-export function ForecastTable() {
+export function ForecastTable({ forecastData }: ForecastTableProps) {
+  // Calculate direction based on price trend
+  const getDirection = (index: number) => {
+    if (index === 0) return 'neutral';
+    const currentPrice = forecastData[index].price;
+    const previousPrice = forecastData[index - 1].price;
+    return currentPrice > previousPrice ? 'up' : currentPrice < previousPrice ? 'down' : 'neutral';
+  };
+
   return (
     <Card className="bg-slate-800 border-slate-700 p-6">
       <div className="mb-4">
@@ -52,32 +39,48 @@ export function ForecastTable() {
         <TableHeader>
           <TableRow className="border-slate-700 hover:bg-slate-700/50">
             <TableHead className="text-slate-300">Date</TableHead>
-            <TableHead className="text-slate-300">Predicted Close</TableHead>
-            <TableHead className="text-slate-300 text-right">Direction</TableHead>
+            <TableHead className="text-slate-300">Price</TableHead>
+            <TableHead className="text-slate-300">Confidence</TableHead>
+            <TableHead className="text-slate-300 text-right">Trend</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {forecastData.map((forecast, index) => (
-            <TableRow key={index} className="border-slate-700 hover:bg-slate-700/30">
-              <TableCell className="text-slate-200">
-                {forecast.formattedDate}
-              </TableCell>
-              <TableCell className="text-slate-200">
-                ${forecast.price.toFixed(2)}
-              </TableCell>
-              <TableCell className="text-right">
-                {forecast.direction === 'up' ? (
-                  <div className="flex items-center justify-end gap-1 text-green-400">
-                    <TrendingUp className="w-4 h-4" />
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-end gap-1 text-red-400">
-                    <TrendingDown className="w-4 h-4" />
-                  </div>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
+          {forecastData.map((forecast, index) => {
+            const direction = getDirection(index);
+            const formattedDate = new Date(forecast.date).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+            });
+
+            return (
+              <TableRow key={index} className="border-slate-700 hover:bg-slate-700/30">
+                <TableCell className="text-slate-200">
+                  {formattedDate}
+                </TableCell>
+                <TableCell className="text-slate-200">
+                  ${forecast.price.toFixed(2)}
+                </TableCell>
+                <TableCell className="text-slate-200">
+                  {(forecast.confidence * 100).toFixed(0)}%
+                </TableCell>
+                <TableCell className="text-right">
+                  {direction === 'up' ? (
+                    <div className="flex items-center justify-end gap-1 text-green-400">
+                      <TrendingUp className="w-4 h-4" />
+                    </div>
+                  ) : direction === 'down' ? (
+                    <div className="flex items-center justify-end gap-1 text-red-400">
+                      <TrendingDown className="w-4 h-4" />
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-end gap-1 text-slate-400">
+                      <Minus className="w-4 h-4" />
+                    </div>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </Card>

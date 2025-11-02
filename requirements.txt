@@ -1,0 +1,23 @@
+# Django and web server
+Django>=5.0,<5.3
+gunicorn>=21.0,<22.0
+python-dotenv>=1.0,<2.0
+
+# Database
+psycopg2-binary>=2.9,<3.0
+
+# Static files serving
+whitenoise>=6.6,<7.0
+
+# CORS for frontend (optional)
+django-cors-headers>=4.3,<5.0
+
+# HTTP requests
+requests>=2.31,<3.0
+
+# Data processing
+pandas>=2.0,<3.0
+numpy>=1.24,<2.0
+
+# API framework (if needed)
+djangorestframework>=3.14,<4.0

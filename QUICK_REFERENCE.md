@@ -1,6 +1,26 @@
 # NeuroTrader - Quick Reference Card
 
-## 🚀 Start Application
+## 🎯 First Time Setup
+
+```bash
+# Clone repository
+git clone https://github.com/moogchi/NeuroTrader.git
+cd NeuroTrader
+
+# Option 1: Automated (Recommended)
+chmod +x setup.sh
+./setup.sh
+
+# Option 2: Manual
+cp .env.example .env
+nano .env  # Add your ALPHA_VANTAGE_API_KEY
+chmod +x init-db.sh
+sudo docker compose down -v
+sudo docker compose up --build -d
+cd frontend && npm install && npm run dev
+```
+
+## 🚀 Start Application (After Setup)
 
 ```bash
 # Option 1: Everything at once
@@ -142,14 +162,16 @@ SPY   - S&P 500 ETF
 
 ## 🐛 Quick Troubleshooting
 
-| Issue                | Solution                                                           |
-| -------------------- | ------------------------------------------------------------------ |
-| 502 Bad Gateway      | `sudo docker compose restart web`                                  |
-| Database errors      | `sudo docker compose exec web python manage.py migrate`            |
-| Frontend blank       | Check console, restart `npm run dev`                               |
-| Port in use          | `sudo lsof -ti:PORT \| xargs kill -9`                              |
-| Docker issues        | `sudo docker compose down -v && sudo docker compose up --build -d` |
-| Static files missing | `sudo docker compose exec web python manage.py collectstatic`      |
+| Issue                    | Solution                                                           |
+| ------------------------ | ------------------------------------------------------------------ |
+| `neurotrader_user` error | `sudo docker compose down -v && sudo docker compose up --build -d` |
+| 502 Bad Gateway          | `sudo docker compose restart web`                                  |
+| Database errors          | `sudo docker compose exec web python manage.py migrate`            |
+| Frontend blank           | Check console, restart `npm run dev`                               |
+| Port in use              | `sudo lsof -ti:PORT \| xargs kill -9`                              |
+| Docker issues            | `sudo docker compose down -v && sudo docker compose up --build -d` |
+| Static files missing     | `sudo docker compose exec web python manage.py collectstatic`      |
+| Missing API key          | Edit `.env`, add key, then `sudo docker compose restart web`       |
 
 ## 📁 Project Structure
 

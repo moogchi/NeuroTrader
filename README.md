@@ -197,24 +197,86 @@ brew install node@18
 
 ## 🚀 Quick Start
 
-### Option 1: One-Command Start (Recommended)
+### First Time Setup
+
+#### Option 1: Automated Setup (Recommended)
 
 ```bash
 # Clone the repository
 git clone https://github.com/moogchi/NeuroTrader.git
 cd NeuroTrader
 
-# Set up your Alpha Vantage API key
-cp .env.example .env
-# Edit .env and add your API key: ALPHA_VANTAGE_API_KEY=your_key_here
+# Run the setup script
+chmod +x setup.sh
+./setup.sh
 
-# Start everything with one command
+# Edit .env to add your Alpha Vantage API key
+nano .env
+# Add: ALPHA_VANTAGE_API_KEY=your_actual_key_here
+
+# Restart backend to load API key
+sudo docker compose restart web
+
+# Start the frontend
+cd frontend
+npm run dev
+```
+
+Open your browser to **http://localhost:3000** 🎉
+
+#### Option 2: Manual Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/moogchi/NeuroTrader.git
+cd NeuroTrader
+
+# 1. Create environment file
+cp .env.example .env
+
+# 2. Edit .env and add your API key
+nano .env
+# Add: ALPHA_VANTAGE_API_KEY=your_actual_key_here
+
+# 3. Make scripts executable
+chmod +x init-db.sh setup.sh
+
+# 4. Start backend services (PostgreSQL + Django + Nginx)
+sudo docker compose down -v  # Clean start
+sudo docker compose up --build -d
+
+# 5. Wait for services to be ready
+sleep 10
+sudo docker compose ps
+
+# 6. Install frontend dependencies
+cd frontend
+npm install
+
+# 7. Start frontend development server
+npm run dev
+```
+
+### Subsequent Starts (After First Setup)
+
+```bash
+# Start backend
+sudo docker compose up -d
+
+# Start frontend (in another terminal)
+cd frontend && npm run dev
+```
+
+### Option 3: One-Command Start (Legacy)
+
+```bash
+# After initial setup, use the start script
 ./start.sh
 ```
 
-Open your browser to **http://localhost** 🎉
+Open your browser to **http://localhost:3000** 🎉
 
-### Option 2: Manual Docker Setup
+### Option 4: Manual Docker Setup
 
 ```bash
 # Start backend services (PostgreSQL + Django + Nginx)
@@ -502,6 +564,41 @@ docker compose exec web python manage.py collectstatic --noinput
 
 ## 🐛 Troubleshooting
 
+### Database Issues
+
+**Error: `role "neurotrader_user" does not exist` or `database "neurotrader_db" does not exist`**
+
+This happens on fresh clones when the database user wasn't created. Fix it with a clean rebuild:
+
+```bash
+# Stop all containers and remove volumes
+sudo docker compose down -v
+
+# Ensure init script is executable
+chmod +x init-db.sh
+
+# Rebuild with fresh database (this will auto-create the user)
+sudo docker compose up --build -d
+
+# Verify database is healthy
+sudo docker compose ps
+```
+
+The `init-db.sh` script will automatically create the database user on first startup.
+
+**Database connection errors:**
+
+```bash
+# Wait for database to be ready
+sudo docker compose exec web python manage.py migrate
+
+# Check database is healthy
+sudo docker compose ps
+
+# If still failing, check logs
+sudo docker compose logs db
+```
+
 ### Docker Issues
 
 **Container won't start:**
@@ -517,16 +614,6 @@ sudo docker compose restart
 # Clean rebuild
 sudo docker compose down -v
 sudo docker compose up --build
-```
-
-**Database connection errors:**
-
-```bash
-# Wait for database to be ready
-docker compose exec web python manage.py migrate
-
-# Check database is healthy
-docker compose ps
 ```
 
 ### Frontend Issues
